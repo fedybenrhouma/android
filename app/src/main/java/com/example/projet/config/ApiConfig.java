@@ -2,13 +2,12 @@ package com.example.projet.config;
 
 /**
  * API Configuration - Store API keys securely
- * Add API_KEY and API_HOST to local.properties file
+ * Get your API key from: https://dashboard.api-football.com
  */
 public class ApiConfig {
-    // These should be loaded from BuildConfig or environment variables
-    // For now, they need to be set in local.properties
+    // IMPORTANT: Replace with your actual API key from https://dashboard.api-football.com
+    // Sign up, subscribe to a plan, and get your key from the dashboard
     
-    public static final String RAPIDAPI_KEY = "e5fb53591552d093868ec934371f5a08"; // Replace with actual key
-    public static final String RAPIDAPI_HOST = "api-football-v1.p.rapidapi.com";
-    public static final int DEFAULT_SEASON = 2024;
+    public static final String API_KEY = "e5fb53591552d093868ec934371f5a08"; // Replace with your key from dashboard.api-football.com
+    public static final int DEFAULT_SEASON = 2023; // Free plan supports 2021-2023
 }

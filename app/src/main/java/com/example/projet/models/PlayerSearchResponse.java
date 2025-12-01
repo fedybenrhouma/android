@@ -1,7 +1,8 @@
-package com.example.projet.models;
+ package com.example.projet.models;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
+import java.util.Map;
 
 public class PlayerSearchResponse {
     @SerializedName("get")
@@ -11,7 +12,7 @@ public class PlayerSearchResponse {
     private Parameters parameters;
     
     @SerializedName("errors")
-    private List<String> errors;
+    private Map<String, String> errors;
     
     @SerializedName("results")
     private int results;
@@ -30,8 +31,8 @@ public class PlayerSearchResponse {
     public Parameters getParameters() { return parameters; }
     public void setParameters(Parameters parameters) { this.parameters = parameters; }
 
-    public List<String> getErrors() { return errors; }
-    public void setErrors(List<String> errors) { this.errors = errors; }
+    public Map<String, String> getErrors() { return errors; }
+    public void setErrors(Map<String, String> errors) { this.errors = errors; }
 
     public int getResults() { return results; }
     public void setResults(int results) { this.results = results; }

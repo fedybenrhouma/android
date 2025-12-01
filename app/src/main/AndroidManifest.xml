@@ -34,6 +34,12 @@
         <activity
             android:name=".PlayerDetailsActivity"
             android:exported="true" />
+        <activity
+            android:name=".FavoritesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TeamDetailsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

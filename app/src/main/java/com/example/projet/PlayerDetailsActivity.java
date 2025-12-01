@@ -1,7 +1,9 @@
 package com.example.projet;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,6 +35,10 @@ public class PlayerDetailsActivity extends AppCompatActivity {
     private TextView teamInfo;
     private TextView statsInfo;
     private ProgressBar progressBar;
+    private Button addToFavoritesButton;
+    private FavoritesManager favoritesManager;
+    private Player currentPlayer;
+    private int currentPlayerId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +54,16 @@ public class PlayerDetailsActivity extends AppCompatActivity {
         teamInfo = findViewById(R.id.teamInfo);
         statsInfo = findViewById(R.id.statsInfo);
         progressBar = findViewById(R.id.progressBar);
+        addToFavoritesButton = findViewById(R.id.addToFavoritesButton);
+
+        favoritesManager = new FavoritesManager();
 
         int playerId = getIntent().getIntExtra("player_id", -1);
         String playerNameIntent = getIntent().getStringExtra("player_name");
 
         if (playerId != -1) {
+            currentPlayerId = playerId;
+            updateFavoriteButton();
             loadPlayerDetails(playerId);
         } else {
             Toast.makeText(this, "Invalid player", Toast.LENGTH_SHORT).show();
@@ -64,7 +75,7 @@ public class PlayerDetailsActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
 
         FootballAPI api = RetrofitClient.getFootballAPI();
-        Call<PlayerSearchResponse> call = api.getPlayerById(playerId);
+        Call<PlayerSearchResponse> call = api.getPlayerById(playerId, ApiConfig.DEFAULT_SEASON);
 
         call.enqueue(new Callback<PlayerSearchResponse>() {
             @Override
@@ -90,6 +101,9 @@ public class PlayerDetailsActivity extends AppCompatActivity {
     }
 
     private void displayPlayerDetails(Player player) {
+        currentPlayer = player;
+        updateFavoriteButton();
+
         if (player.getPlayerInfo() != null) {
             PlayerInfo info = player.getPlayerInfo();
 
@@ -114,6 +128,22 @@ public class PlayerDetailsActivity extends AppCompatActivity {
                 String team = stats.getTeam().getName();
                 String league = stats.getLeague().getName();
                 teamInfo.setText("Team: " + team + "\nLeague: " + league + " (" + stats.getLeague().getSeason() + ")");
+
+                // Make team info clickable
+                final int teamId = stats.getTeam().getId();
+                final String teamName = stats.getTeam().getName();
+                final String teamLogo = stats.getTeam().getLogo();
+                
+                teamInfo.setClickable(true);
+                teamInfo.setFocusable(true);
+                teamInfo.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+                teamInfo.setOnClickListener(v -> {
+                    Intent intent = new Intent(PlayerDetailsActivity.this, TeamDetailsActivity.class);
+                    intent.putExtra("team_id", teamId);
+                    intent.putExtra("team_name", teamName);
+                    intent.putExtra("team_logo", teamLogo);
+                    startActivity(intent);
+                });
 
                 String statsText = buildStatsText(stats);
                 statsInfo.setText(statsText);
@@ -171,5 +201,80 @@ public class PlayerDetailsActivity extends AppCompatActivity {
         }
 
         return sb.toString();
+    }
+
+    private void updateFavoriteButton() {
+        if (currentPlayerId == -1) {
+            return;
+        }
+
+        addToFavoritesButton.setEnabled(false);
+        
+        favoritesManager.isFavorite(currentPlayerId, isFavorite -> {
+            runOnUiThread(() -> {
+                addToFavoritesButton.setEnabled(true);
+                
+                if (isFavorite) {
+                    addToFavoritesButton.setText("Remove from Favorites");
+                    addToFavoritesButton.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+                } else {
+                    addToFavoritesButton.setText("Add to Favorites");
+                    addToFavoritesButton.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+                }
+            });
+        });
+
+        addToFavoritesButton.setOnClickListener(v -> toggleFavorite());
+    }
+
+    private void toggleFavorite() {
+        if (currentPlayer == null || currentPlayerId == -1) {
+            Toast.makeText(this, "Player data not loaded", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        addToFavoritesButton.setEnabled(false);
+
+        favoritesManager.isFavorite(currentPlayerId, isFavorite -> {
+            if (isFavorite) {
+                // Remove from favorites
+                favoritesManager.removeFavorite(currentPlayerId, new FavoritesManager.OperationCallback() {
+                    @Override
+                    public void onSuccess() {
+                        runOnUiThread(() -> {
+                            Toast.makeText(PlayerDetailsActivity.this, "Removed from favorites", Toast.LENGTH_SHORT).show();
+                            updateFavoriteButton();
+                        });
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(PlayerDetailsActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+                            addToFavoritesButton.setEnabled(true);
+                        });
+                    }
+                });
+            } else {
+                // Add to favorites
+                favoritesManager.addFavorite(currentPlayer, new FavoritesManager.OperationCallback() {
+                    @Override
+                    public void onSuccess() {
+                        runOnUiThread(() -> {
+                            Toast.makeText(PlayerDetailsActivity.this, "Added to favorites", Toast.LENGTH_SHORT).show();
+                            updateFavoriteButton();
+                        });
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(PlayerDetailsActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+                            addToFavoritesButton.setEnabled(true);
+                        });
+                    }
+                });
+            }
+        });
     }
 }

@@ -11,7 +11,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    private static final String BASE_URL = "https://api-football-v1.p.rapidapi.com/v3/";
+    private static final String BASE_URL = "https://v3.football.api-sports.io/";
     private static final String TAG = "RetrofitClient";
     private static Retrofit retrofit;
 
@@ -26,16 +26,14 @@ public class RetrofitClient {
                     .addInterceptor(chain -> {
                         okhttp3.Request original = chain.request();
                         
-                        // Add RapidAPI headers to all requests
+                        // Add API-Football dashboard headers to all requests
                         okhttp3.Request request = original.newBuilder()
-                                .header("x-rapidapi-key", ApiConfig.RAPIDAPI_KEY)
-                                .header("x-rapidapi-host", ApiConfig.RAPIDAPI_HOST)
+                                .header("x-apisports-key", ApiConfig.API_KEY)
                                 .header("User-Agent", "Android-Football-App/1.0")
                                 .build();
                         
                         Log.d(TAG, "Request: " + request.url());
-                        Log.d(TAG, "Headers - Key: " + request.header("x-rapidapi-key"));
-                        Log.d(TAG, "Headers - Host: " + request.header("x-rapidapi-host"));
+                        Log.d(TAG, "Headers - API Key: " + (ApiConfig.API_KEY != null ? "***" + ApiConfig.API_KEY.substring(Math.max(0, ApiConfig.API_KEY.length() - 4)) : "null"));
                         
                         okhttp3.Response response = chain.proceed(request);
                         Log.d(TAG, "Response Code: " + response.code());
@@ -44,9 +42,10 @@ public class RetrofitClient {
                     .addInterceptor(loggingInterceptor)
                     .build();
 
-            // Create Gson with lenient parsing
+            // Create Gson with lenient parsing and null handling
             Gson gson = new GsonBuilder()
                     .setLenient()
+                    .serializeNulls()
                     .create();
 
             retrofit = new Retrofit.Builder()

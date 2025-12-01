@@ -1,47 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <!-- Navbar -->
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#2E7D32"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:elevation="4dp">
+
+        <ImageView
+            android:id="@+id/appLogo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/download"
+            android:contentDescription="App Logo"
+            android:layout_marginEnd="12dp" />
 
         <TextView
-            android:id="@+id/userEmail"
-            android:layout_width="wrap_content"
+            android:id="@+id/appName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Welcome!"
+            android:layout_weight="1"
+            android:text="FootStats"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:layout_marginBottom="30dp" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Search Players"
-            android:onClick="searchPlayers"
-            android:layout_marginBottom="15dp"
-            android:padding="15dp" />
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/logoutButton"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Logout"
-            android:padding="15dp" />
+            android:textColor="@android:color/white"
+            android:backgroundTint="#D32F2F"
+            android:padding="10dp"
+            android:textSize="14sp" />
 
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/searchPlayersButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Search Players"
+            android:onClick="searchPlayers"
+            android:layout_marginEnd="8dp"
+            android:padding="12dp"
+            android:backgroundTint="#1976D2"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/favoritesButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="My Favorites"
+            android:onClick="viewFavorites"
+            android:layout_marginStart="8dp"
+            android:padding="12dp"
+            android:backgroundTint="#F57C00"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+    <!-- Featured Players Section -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Featured Players"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:padding="16dp"
+        android:paddingTop="8dp"
+        android:textColor="#2E7D32" />
+
+    <!-- Loading Indicator -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <!-- Players List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/featuredPlayersRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:clipToPadding="false" />
+
+    <!-- Empty State -->
+    <TextView
+        android:id="@+id/emptyStateText"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Loading featured players..."
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textColor="#757575"
+        android:visibility="gone" />
+
+</LinearLayout>
